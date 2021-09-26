@@ -35,26 +35,29 @@ void BeastHandler::post(string_view host, string_view target, string_view body, 
     stream.handshake(ssl::stream_base::client);
 
     http::request<http::string_body> req{http::verb::post , target.data(), version_};
-    req.set(http::field::host, host);
-//    req.set(http::field::body, body);
+    req.set(http::field::host, host.data());
     req.set(http::field::user_agent, "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:92.0) Gecko/20100101 Firefox/92.0");
-//    req.set(http::field::user_agent, BOOST_BEAST_VERSION_STRING);
     req.set(http::field::connection, "keep-alive");
     req.set(http::field::accept, "application/json, text/plain, */*");
     req.set(http::field::cache_control, "no-cache");
 //    req.set(http::field::content_length, to_string(body.size()));
     req.set(http::field::content_type, "application/json");
     req.set(http::field::referer, "https://agregatoreat.ru/");
+    req.set(http::field::accept_language, "n-US,en;q=0.5");
+    req.set(http::field::accept_encoding, "gzip, deflate, br");
+//    req.set(http::field::te, "trailers");
     req.set(http::field::pragma, "no-cache");
-    req.set(http::field::host, "localhost");
+    req.set(http::field::origin, "https://agregatoreat.ru");
+//    req.set(http::field::host, "localhost");
     req.content_length(body.size());
-    req.body() = body;
+    req.body() = body.data();
 
-    req.set(http::field::proxy_connection, boost::asio::ip::address_v4::from_string("127.0.0.1"));
+//    req.set(http::field::proxy_connection, boost::asio::ip::address_v4::from_string("127.0.0.1"));
 
 
 //    // Read just the header from the input
 //      read_header(input, buffer, p, ec);
+    std::cout<<req<< "\n\n\n";
 
     http::write(stream, req);
 
@@ -88,7 +91,11 @@ void BeastHandler::get(string_view host, string_view target, string_view port)
     // Set up an HTTP GET request message
     http::request<http::string_body> req{http::verb::get, target.data(), version_};
     req.set(http::field::host, host);
-    req.set(http::field::user_agent, BOOST_BEAST_VERSION_STRING);
+//    req.set(http::field::user_agent, BOOST_BEAST_VERSION_STRING);
+    req.set(http::field::user_agent, "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:92.0) Gecko/20100101 Firefox/92.0");
+
+
+    std::cout<<req<< "\n\n\n";
 
     // Send the HTTP request to the remote host
     http::write(stream, req);
