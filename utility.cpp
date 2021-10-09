@@ -13,7 +13,6 @@ namespace Utility
             return "";
         }
 
-
         string doc, line;
 
         while(getline(ifile, line))
@@ -39,24 +38,22 @@ namespace Utility
 
         if ((where.find(lstr) == std::string::npos) || (where.find(rstr) == std::string::npos))
         {
-            qDebug()<<"No data to parse\n"<<Qt::endl;
-            return "";
+            std::cerr << "Cannot parse data from page" << std::endl;
+            throw Exception("Cannot parse file in parseDataFromPage");
         }
 
         if (!with_left)
         {
             lpos = where.find(lstr);
-            rpos = where.find(rstr, lpos);
+            rpos = where.find(rstr, lpos + lstr.size());
             ret_val = where.substr(lpos + lstr.size(), rpos - lpos - lstr.size());
         }
         else
         {
             lpos = where.find(lstr);
-            rpos = where.find(rstr, lpos);
+            rpos = where.find(rstr, lpos + lstr.size());
             ret_val = where.substr(lpos, rpos - lpos);
         }
-
-        while ((lpos = ret_val.find("\"")) != std::string::npos) ret_val.erase(lpos, 1);
 
         return ret_val;
     }
@@ -71,6 +68,7 @@ namespace Utility
 
     const string getHostFromUrl(const string &file)
     {
+
         std::string temp;
         temp = file.substr(file.find("//")+2);
         temp = temp.substr(0, temp.find("/"));

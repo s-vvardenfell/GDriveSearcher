@@ -95,7 +95,7 @@ void BeastHandler::get(string_view host, string_view target, string_view port)
     req.set(http::field::user_agent, "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:92.0) Gecko/20100101 Firefox/92.0");
 
 
-    std::cout<<req<< "\n\n\n";
+//    std::cout<<req<< "\n\n\n";
 
     // Send the HTTP request to the remote host
     http::write(stream, req);
@@ -110,8 +110,71 @@ void BeastHandler::get(string_view host, string_view target, string_view port)
     http::read(stream, buffer, res);
 
     // Write the message to standard out
-    std::cout << res << std::endl;
+//    std::cout << res << std::endl;
+    stringstream ss;
+    ss<<res;
+    Utility::saveDocument("beast_log.txt", ss.str());
 
+}
+
+void BeastHandler::get(std::string const& url)
+{
+    beast::ssl_stream<beast::tcp_stream> stream(ioc, ctx);
+    static std::string host;
+
+    if(url[0] != '/')
+        host = Utility::parseDataFromPage(url, "https://", "/", false);
+
+    cout<<url<<endl;
+
+    if(! SSL_set_tlsext_host_name(stream.native_handle(), host.c_str()))
+    {
+        beast::error_code ec{static_cast<int>(::ERR_get_error()), net::error::get_ssl_category()};
+        throw beast::system_error{ec};
+    }
+
+    auto const results = resolver.resolve(host.c_str(), "443");
+
+    beast::get_lowest_layer(stream).connect(results);
+
+    stream.handshake(ssl::stream_base::client);
+
+    http::request<http::string_body> req{http::verb::get, url.c_str(), version_};
+    req.set(http::field::host, host.c_str());
+    req.set(http::field::user_agent, "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:92.0) Gecko/20100101 Firefox/92.0");
+
+    http::write(stream, req);
+
+    beast::flat_buffer buffer;
+
+    http::response<http::dynamic_body> res;
+
+    http::read(stream, buffer, res);
+
+    stringstream ss;
+
+    switch(res.base().result_int())
+    {
+        case 301:
+        case 302:
+        case 303:
+        case 304:
+        case 305:
+        case 306:
+        case 307:
+        case 308:
+            std::cout << "Redirecting.....\n";
+            get(res.base()["Location"].to_string());
+            break;
+        case 200:
+            ss<<res;
+            Utility::saveDocument("beast_log.txt", ss.str());
+            std::cout << res << "\n";
+            break;
+        default:
+            std::cout << "Unexpected HTTP status " << res.result_int() << "\n";
+            break;
+    }
 }
 
 string BeastHandler::getResponseBody() const

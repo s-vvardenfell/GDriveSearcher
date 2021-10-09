@@ -17,6 +17,8 @@
 #include <boost/certify/extensions.hpp>
 #include <boost/certify/https_verification.hpp>
 
+#include "utility.hpp"
+
 namespace beast = boost::beast; // from <boost/beast.hpp>
 namespace http = beast::http;   // from <boost/beast/http.hpp>
 namespace net = boost::asio;    // from <boost/asio.hpp>
@@ -33,6 +35,8 @@ public:
 
     void post(string_view host, string_view target, string_view body = "", string_view port = "443");
     void get(string_view host, string_view target, string_view port = "443");
+
+    void get(std::string const& url);
 
     string getResponseBody() const;
     string getResponseHeaders() const;

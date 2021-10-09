@@ -1,8 +1,8 @@
 #ifndef UTILITY_H
 #define UTILITY_H
 
-#endif // UTILITY_H
 
+#include <iostream>
 #include <string>
 #include <fstream>
 #include <iomanip>
@@ -25,3 +25,5 @@ namespace Utility
 
     const std::string getHostFromUrl(const std::string& file);
 }
+
+#endif // UTILITY_H
