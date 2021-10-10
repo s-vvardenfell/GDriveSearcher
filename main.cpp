@@ -8,10 +8,6 @@
 
 using namespace std;
 
-const std::string getHostFromURL(const string &url)
-{
-
-}
 
 int main()
 {
@@ -19,9 +15,28 @@ int main()
 
 //    GDriveHandler handler;
 //    handler.query("windows", "");
-
+    const string b2b_url = "https://www.b2b-center.ru/market/?f_keyword=1%D1%81&searching=1&company_type=2&price_currency=0&date=1&trade=all#search-result";
     BeastHandler beast;
-    beast.get("https://www.b2b-center.ru/market/?f_keyword=1%D1%81&searching=1&company_type=2&price_currency=0&date=1&trade=all#search-result");
+    Response response = beast.get(b2b_url);
+//    beast.get("www.b2b-center.ru",b2b_url);
+
+
+
+
+
+    Utility::saveDocument("log_headers.txt", response.headers_);
+    Utility::saveDocument("log_body.txt", response.body_);
+//    http::request<http::string_body> req{http::verb::get, b2b_url.c_str(), 11};
+//    req.set(http::field::host, "www.b2b-center.ru");
+//    req.set(http::field::user_agent, "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:92.0) Gecko/20100101 Firefox/92.0");
+
+//    cout<<req.target();
+//    beast.get(req);
+
+
+
+
+
 
 //    string url = "<a href=https://www.b2b-center.ru/auth/server/?action=track&amp;a=MDAwMDAwMDAwMDAwMDAwMMWdSEhhDhgrWuROjhjISaHavqnXvUC8gwCmlguuOpEORSC-p8Xl8masvaxgtYrWa_i-KlLw2oL-VAHOYqMZ01JSCLU-r8YeGp7FChPLjS7-DOehANvFrDhyDjKXm5xo4pEbJbmz5_KCGJFqz3wayVgjZ_0AgnTqlZtDrntQDvKYWXpTu8IALn2d0W5Mt9V-PdP0tzPAbNHGkck4lltDkZVeVNqKYmoGY8W4zXFvlWf4-5ietLkv8m9V-QHgfpucT4dFVlWPqb9FBFwFmMB2fRJ_JRuBLROyg4UvvmzSxOt-tZ7ucs4_zi_LzyjUqiQOw8ksiWQ2_Kz6OwpOfpfNmTISHgrPktZ1a_N8RPD5XVf9vbx1p8oSzoHd11imm4JUAZVTc8mGTPv4GTflx3dsiESL82vE6bYrltV8p5OThKYHalIlfzORJSOIDrfwMe4tyQPsegoevvMqZHzwpDutDjuoRB4TDEFvptYFhWVQcR6efR5rvEhoVMANOn94nJe4AA%7E%7E>Продолжить &gt;&gt;";
 //    string url2 = "https://www.b2b-center.ru/market/?f_keyword=1%D1%81&searching=1&company_type=2&pric";

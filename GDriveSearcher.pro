@@ -53,4 +53,5 @@ HEADERS += \
     curl_handler.hpp \
     exception.hpp \
     gdrive_handler.hpp \
+    response.hpp \
     utility.hpp

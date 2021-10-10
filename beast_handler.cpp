@@ -117,15 +117,13 @@ void BeastHandler::get(string_view host, string_view target, string_view port)
 
 }
 
-void BeastHandler::get(std::string const& url)
+Response BeastHandler::get(std::string const& url)
 {
     beast::ssl_stream<beast::tcp_stream> stream(ioc, ctx);
     static std::string host;
 
     if(url[0] != '/')
         host = Utility::parseDataFromPage(url, "https://", "/", false);
-
-    cout<<url<<endl;
 
     if(! SSL_set_tlsext_host_name(stream.native_handle(), host.c_str()))
     {
@@ -151,7 +149,7 @@ void BeastHandler::get(std::string const& url)
 
     http::read(stream, buffer, res);
 
-    stringstream ss;
+    static stringstream ss_h, ss_b;
 
     switch(res.base().result_int())
     {
@@ -163,18 +161,25 @@ void BeastHandler::get(std::string const& url)
         case 306:
         case 307:
         case 308:
+        case 309:
+        case 310:
+        case 311:
             std::cout << "Redirecting.....\n";
             get(res.base()["Location"].to_string());
             break;
         case 200:
-            ss<<res;
-            Utility::saveDocument("beast_log.txt", ss.str());
-            std::cout << res << "\n";
-            break;
+        ss_h<<res.base();
+        ss_b<<beast::buffers_to_string(res.body().data());
+//        Utility::saveDocument("answer_h.txt", ss_h.str());
+//        Utility::saveDocument("answer_b.txt", beast::buffers_to_string(res.body().data()));
+        break;
+
         default:
             std::cout << "Unexpected HTTP status " << res.result_int() << "\n";
             break;
     }
+
+    return Response{static_cast<int>(res.base().result_int()), ss_h.str(), ss_b.str()};
 }
 
 string BeastHandler::getResponseBody() const
